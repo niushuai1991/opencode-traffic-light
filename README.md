@@ -12,13 +12,13 @@ A TUI plugin that adds a status indicator to your terminal title bar, giving you
 
 ## Installation
 
-### Option 1: npm package (recommended)
+### Option 1: Install from GitHub (recommended)
 
 Add to your project's `.opencode/tui.json`:
 
 ```jsonc
 {
-  "plugin": ["opencode-status-light"]
+  "plugin": ["opencode-status-light@git+https://github.com/niushuai1991/opencode-status-light.git"]
 }
 ```
 
