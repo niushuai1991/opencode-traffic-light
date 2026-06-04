@@ -1,0 +1,14 @@
+{
+  "name": "opencode-status-light",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./tui": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": ">=1.0.0"
+  },
+  "engines": {
+    "opencode": ">=1.0.0"
+  }
+}
