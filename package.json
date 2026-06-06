@@ -1,5 +1,5 @@
 {
-  "name": "opencode-status-light",
+  "name": "opencode-traffic-light",
   "version": "1.0.0",
   "type": "module",
   "exports": {

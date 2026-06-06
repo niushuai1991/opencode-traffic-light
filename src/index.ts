@@ -1,8 +1,8 @@
 import type { TuiPlugin, TuiPluginModule } from "@opencode-ai/plugin/tui"
 
-type StatusLightColor = "green" | "yellow" | "red"
+type TrafficLightColor = "green" | "yellow" | "red"
 
-type StatusLightInput = {
+type TrafficLightInput = {
   enabled: boolean
   sessionStatus?: { type: string }
   messages?: readonly { role: string; id: string }[]
@@ -15,7 +15,7 @@ type StatusLightInput = {
   }[]
 }
 
-function computeStatusLight(input: StatusLightInput): StatusLightColor | null {
+function computeTrafficLight(input: TrafficLightInput): TrafficLightColor | null {
   if (!input.enabled) return null
   if (!input.sessionStatus || input.sessionStatus.type === "idle") return "green"
   if (!input.messages || input.messages.length === 0) return "green"
@@ -38,7 +38,7 @@ function computeStatusLight(input: StatusLightInput): StatusLightColor | null {
   return "yellow"
 }
 
-function statusEmoji(color: StatusLightColor | null): string {
+function statusEmoji(color: TrafficLightColor | null): string {
   if (color === "green") return "\u{1F7E2}"
   if (color === "yellow") return "\u{1F7E1}"
   if (color === "red") return "\u{1F534}"
@@ -65,7 +65,7 @@ const EVENTS = [
 const tui: TuiPlugin = async (api) => {
   if (process.env.OPENCODE_DISABLE_TERMINAL_TITLE === "1") return
 
-  const KV_KEY = "status_light_enabled"
+  const KV_KEY = "traffic_light_enabled"
   let enabled = api.kv.get<boolean>(KV_KEY, true)
   let timer: ReturnType<typeof setTimeout> | undefined
 
@@ -90,7 +90,7 @@ const tui: TuiPlugin = async (api) => {
     const lastAssistant = messages && [...messages].reverse().find(m => m.role === "assistant")
     const parts = lastAssistant ? api.state.part(lastAssistant.id) : undefined
 
-    const color = computeStatusLight({
+    const color = computeTrafficLight({
       enabled,
       sessionStatus: status ?? undefined,
       messages,
@@ -116,8 +116,8 @@ const tui: TuiPlugin = async (api) => {
   api.keymap.registerLayer({
     commands: [
       {
-        name: "status_light.toggle",
-        title: "Toggle status light",
+        name: "traffic_light.toggle",
+        title: "Toggle traffic light",
         category: "Plugin",
         namespace: "palette",
         run() {
@@ -125,7 +125,7 @@ const tui: TuiPlugin = async (api) => {
           api.kv.set(KV_KEY, enabled)
           api.ui.toast({
             variant: "info",
-            message: `Status light ${enabled ? "enabled" : "disabled"}`,
+            message: `Traffic light ${enabled ? "enabled" : "disabled"}`,
           })
           scheduleUpdate()
         },
@@ -141,7 +141,7 @@ const tui: TuiPlugin = async (api) => {
 }
 
 const plugin: TuiPluginModule & { id: string } = {
-  id: "opencode-status-light",
+  id: "opencode-traffic-light",
   tui,
 }
 

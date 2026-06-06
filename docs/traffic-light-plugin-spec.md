@@ -1,4 +1,4 @@
-# Status Light Plugin (状态灯插件)
+# Traffic Light Plugin (红绿灯插件)
 
 通过 TUI 插件实现终端标题栏状态指示灯，实时反映 opencode 当前工作状态。
 
@@ -7,15 +7,15 @@
 将插件文件放置到插件目录：
 
 ```
-.opencode/plugins/status-light.ts    # 项目级
-~/.config/opencode/plugins/status-light.ts  # 全局
+.opencode/plugins/traffic-light.ts    # 项目级
+~/.config/opencode/plugins/traffic-light.ts  # 全局
 ```
 
 或在 `tui.json` 中通过 npm 包引用：
 
 ```jsonc
 {
-  "plugin": ["opencode-status-light"]
+  "plugin": ["opencode-traffic-light"]
 }
 ```
 
@@ -23,7 +23,7 @@
 
 | API | 用途 |
 |-----|------|
-| `api.renderer.setTerminalTitle(title)` | 设置终端标题（带状态灯前缀） |
+| `api.renderer.setTerminalTitle(title)` | 设置终端标题（带红绿灯前缀） |
 | `api.state.session.status(sessionID)` | 获取 session 状态（idle/busy/retry） |
 | `api.state.session.messages(sessionID)` | 获取消息列表 |
 | `api.state.session.permission(sessionID)` | 获取 pending permission 请求 |
@@ -58,9 +58,9 @@
 | `session.next.text.started` | 文本输出开始 |
 | `session.next.text.ended` | 文本输出结束 |
 
-## 状态灯颜色逻辑
+## 红绿灯颜色逻辑
 
-`computeStatusLight` 是一个纯函数，使用结构类型（structural typing）避免依赖 SDK 具体类型，便于独立测试：
+`computeTrafficLight` 是一个纯函数，使用结构类型（structural typing）避免依赖 SDK 具体类型，便于独立测试：
 
 | 优先级 | 条件 | 颜色 |
 |--------|------|------|
@@ -79,9 +79,9 @@
 ```ts
 import type { TuiPlugin, TuiPluginModule } from "@opencode-ai/plugin/tui"
 
-type StatusLightColor = "green" | "yellow" | "red"
+type TrafficLightColor = "green" | "yellow" | "red"
 
-type StatusLightInput = {
+type TrafficLightInput = {
   enabled: boolean
   sessionStatus?: { type: string }
   messages?: readonly { role: string; id: string }[]
@@ -94,7 +94,7 @@ type StatusLightInput = {
   }[]
 }
 
-function computeStatusLight(input: StatusLightInput): StatusLightColor | null {
+function computeTrafficLight(input: TrafficLightInput): TrafficLightColor | null {
   if (!input.enabled) return null
   if (!input.sessionStatus || input.sessionStatus.type === "idle") return "green"
   if (!input.messages || input.messages.length === 0) return "green"
@@ -117,7 +117,7 @@ function computeStatusLight(input: StatusLightInput): StatusLightColor | null {
   return "yellow"
 }
 
-function statusEmoji(color: StatusLightColor | null): string {
+function statusEmoji(color: TrafficLightColor | null): string {
   if (color === "green") return "\u{1F7E2}"
   if (color === "yellow") return "\u{1F7E1}"
   if (color === "red") return "\u{1F534}"
@@ -144,7 +144,7 @@ const EVENTS = [
 const tui: TuiPlugin = async (api) => {
   if (process.env.OPENCODE_DISABLE_TERMINAL_TITLE === "1") return
 
-  const KV_KEY = "status_light_enabled"
+  const KV_KEY = "traffic_light_enabled"
   let enabled = api.kv.get<boolean>(KV_KEY, true)
 
   let timer: ReturnType<typeof setTimeout> | undefined
@@ -170,7 +170,7 @@ const tui: TuiPlugin = async (api) => {
     const lastAssistant = messages && [...messages].reverse().find(m => m.role === "assistant")
     const parts = lastAssistant ? api.state.part(lastAssistant.id) : undefined
 
-    const color = computeStatusLight({
+    const color = computeTrafficLight({
       enabled,
       sessionStatus: status ?? undefined,
       messages,
@@ -199,8 +199,8 @@ const tui: TuiPlugin = async (api) => {
   api.keymap.registerLayer({
     commands: [
       {
-        name: "status_light.toggle",
-        title: "Toggle status light",
+        name: "traffic_light.toggle",
+        title: "Toggle traffic light",
         category: "Plugin",
         namespace: "palette",
         run() {
@@ -208,7 +208,7 @@ const tui: TuiPlugin = async (api) => {
           api.kv.set(KV_KEY, enabled)
           api.ui.toast({
             variant: "info",
-            message: `Status light ${enabled ? "enabled" : "disabled"}`,
+            message: `Traffic light ${enabled ? "enabled" : "disabled"}`,
           })
           scheduleUpdate()
         },
@@ -224,7 +224,7 @@ const tui: TuiPlugin = async (api) => {
 }
 
 const plugin: TuiPluginModule & { id: string } = {
-  id: "opencode-status-light",
+  id: "opencode-traffic-light",
   tui,
 }
 
@@ -235,7 +235,7 @@ export default plugin
 
 ### 标题竞争
 
-`app.tsx` 中有一个 `createEffect` 会在路由变化时设置终端标题。插件设置的状态灯标题可能被主 effect 覆盖。
+`app.tsx` 中有一个 `createEffect` 会在路由变化时设置终端标题。插件设置的红绿灯标题可能被主 effect 覆盖。
 
 **解决方案**：所有 `updateTitle` 调用通过 `setTimeout(fn, 0)` 延迟一帧执行，确保在主 effect 之后运行。连续事件会自动合并（取消前一个 timer，设置新 timer）。
 
@@ -251,12 +251,12 @@ export default plugin
 
 ### 性能
 
-`message.part.delta` 事件在流式输出时高频触发。通过 `setTimeout` 合并连续调用，同一帧内多次事件只会执行一次标题更新。`computeStatusLight` 使用纯函数 + 结构类型，无额外依赖开销。
+`message.part.delta` 事件在流式输出时高频触发。通过 `setTimeout` 合并连续调用，同一帧内多次事件只会执行一次标题更新。`computeTrafficLight` 使用纯函数 + 结构类型，无额外依赖开销。
 
 ## 文件结构
 
 ```
-opencode-status-light/
+opencode-traffic-light/
 ├── src/
 │   └── index.ts          # 插件入口，default export
 ├── package.json
@@ -267,7 +267,7 @@ opencode-status-light/
 
 ```json
 {
-  "name": "opencode-status-light",
+  "name": "opencode-traffic-light",
   "version": "1.0.0",
   "type": "module",
   "exports": {
@@ -284,4 +284,4 @@ opencode-status-light/
 
 ## 与源码修改方案的差异
 
-源码修改方案（`opencode_status_light`）在 `packages/core` 中添加 `computeStatusLight` 共享函数，被 TUI 和 Web UI 同时使用。插件方案独立打包，不修改 opencode 源码，仅通过 TUI Plugin API 实现，功能上完全等价。
+源码修改方案（`opencode_traffic_light`）在 `packages/core` 中添加 `computeTrafficLight` 共享函数，被 TUI 和 Web UI 同时使用。插件方案独立打包，不修改 opencode 源码，仅通过 TUI Plugin API 实现，功能上完全等价。
