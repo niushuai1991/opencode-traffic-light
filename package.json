@@ -1,6 +1,6 @@
 {
   "name": "opencode-traffic-light",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TUI plugin that adds a traffic-light status indicator to your OpenCode terminal title",
   "type": "module",
   "license": "MIT",

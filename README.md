@@ -12,51 +12,17 @@ A TUI plugin that adds a status indicator to your terminal title bar, giving you
 
 ## Installation
 
-### Option 1: Install from npm (recommended)
+Add the plugin to your **`tui.json`**:
 
-Install the package:
-
-```bash
-npm install opencode-traffic-light
-```
-
-Then add to your project's `.opencode/tui.json`:
-
-```jsonc
+```json
 {
   "plugin": ["opencode-traffic-light"]
 }
 ```
 
-Or install globally via `~/.config/opencode/tui.json`.
+That's it. OpenCode will automatically install the plugin on next run.
 
-### Option 2: Install from GitHub
-
-Add to your project's `.opencode/tui.json`:
-
-```jsonc
-{
-  "plugin": ["opencode-traffic-light@git+https://github.com/niushuai1991/opencode-traffic-light.git"]
-}
-```
-
-Or install globally via `~/.config/opencode/tui.json`.
-
-### Option 3: Local plugin file
-
-Copy `src/index.ts` into your project's plugin directory:
-
-```
-.opencode/plugins/traffic-light.ts
-```
-
-### Option 4: Global plugin file
-
-Copy `src/index.ts` to the global plugin directory:
-
-```
-~/.config/opencode/plugins/traffic-light.ts
-```
+> **Note:** This is a TUI plugin, so it must be configured in `~/.config/opencode/tui.json`, not `opencode.json`.
 
 ## Usage
 
