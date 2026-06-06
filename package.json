@@ -1,7 +1,20 @@
 {
   "name": "opencode-traffic-light",
   "version": "1.0.0",
+  "description": "TUI plugin that adds a traffic-light status indicator to your OpenCode terminal title",
   "type": "module",
+  "license": "MIT",
+  "author": "niushuai1991",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niushuai1991/opencode-traffic-light.git"
+  },
+  "homepage": "https://github.com/niushuai1991/opencode-traffic-light#readme",
+  "bugs": {
+    "url": "https://github.com/niushuai1991/opencode-traffic-light/issues"
+  },
+  "keywords": ["opencode", "opencode-plugin", "tui", "terminal", "status", "traffic-light"],
+  "files": ["src", "README.md", "LICENSE"],
   "exports": {
     "./tui": "./src/index.ts"
   },
