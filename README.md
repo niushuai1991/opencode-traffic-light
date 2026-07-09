@@ -10,7 +10,7 @@ A TUI plugin that adds a status indicator to your terminal title bar, giving you
 | 🟡 Yellow | Busy but no active tool or text output (thinking) |
 | 🔴 Red | Running tools or generating text |
 
-![demo](https://raw.githubusercontent.com/niushuai1991/opencode-traffic-light/main/demo.gif)
+![demo](https://cdn.jsdelivr.net/gh/niushuai1991/opencode-traffic-light@main/demo.gif)
 
 ## Installation
 
